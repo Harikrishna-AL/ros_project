@@ -1,0 +1,1 @@
+/home/harikrishna/catkin_ws/src/sensor_data/devel/.private/catkin_tools_prebuild/local_setup.bash

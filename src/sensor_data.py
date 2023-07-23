@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+
+import rospy
+from sensor_data_receiver.srv import SensorData, SensorDataResponse
+from flask import Flask, request
+
+UPLOAD_FOLDER = './image_data'
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+orientations = []
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def is_orientation_change_significant(data, threshold = 1):
+    if orientations == []:
+        orientations.append(data)
+        return False
+    new_data = data
+    prev_data = orientations[-1]
+    # Extract orientation angles from the new_data and prev_data
+    new_roll = new_data['values']['roll']
+    new_pitch = new_data['values']['pitch']
+    new_yaw = new_data['values']['yaw']
+
+    prev_roll = prev_data['values']['roll']
+    prev_pitch = prev_data['values']['pitch']
+    prev_yaw = prev_data['values']['yaw']
+
+    # Check if any of the orientation angles change significantly
+    roll_change = abs(new_roll - prev_roll) > threshold
+    pitch_change = abs(new_pitch - prev_pitch) > threshold
+    yaw_change = abs(new_yaw - prev_yaw) > threshold
+
+    return roll_change or pitch_change or yaw_change
+
+# ROS service callback to handle incoming sensor data
+def handle_sensor_data(req):
+    # Process the incoming sensor data here (e.g., save to file, display, etc.)
+    # You can access the data from req.accelerometer, req.gpu, req.location
+    rospy.loginfo("Received Sensor Data:")
+    rospy.loginfo("Accelerometer: %s", req.accelerometer)
+    rospy.loginfo("GPU: %s", req.gpu)
+    rospy.loginfo("Location: %s", req.location)
+
+    # Return a success response
+    return SensorDataResponse(success=True)
+
+# Route to receive sensor data via HTTP POST
+@app.route('/sensor_data', methods=['POST', 'GET'])
+def receive_sensor_data():
+    # Parse the JSON data from the HTTP POST request
+    data = request.get_json()
+    for _d in data['payload']:
+        if _d["name"] == "orientation":
+            print("ok")
+            print(is_orientation_change_significant(_d))
+            break
+    print("--------------")
+    # Call the ROS service to handle the received sensor data
+    rospy.wait_for_service('sensor_data')
+    try:
+        sensor_data_service = rospy.ServiceProxy('sensor_data', SensorData)
+        response = sensor_data_service(
+            accelerometer=data.get('accelerometer', ''),
+            gpu=data.get('gpu', ''),
+            location=data.get('location', '')
+        )
+	#if file and allowed_file(file.filename):
+       #     filename = secure_filename(file.filename)
+       #     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+       #     return redirect(url_for('uploaded_file',
+       #                             filename=filename))
+        return {'success': response.success}
+    except rospy.ServiceException as e:
+        rospy.logerr("Service call failed: %s", str(e))
+        return {'success': False}
+
+if __name__ == '__main__':
+    # Initialize ROS node
+    rospy.init_node('sensor_data_receiver_node')
+
+    # Create the ROS service 'sensor_data' and set the callback
+    rospy.Service('sensor_data', SensorData, handle_sensor_data)
+
+    # Run the Flask HTTP server on port 8000
+    app.run(host='0.0.0.0', port=8000)
+    uploaded_file = request.files.get('file')

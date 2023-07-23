@@ -1,0 +1,12 @@
+Symlinking /home/harikrishna/catkin_ws/src/sensor_data/devel/./setup.zsh
+Symlinking /home/harikrishna/catkin_ws/src/sensor_data/devel/./setup.bash
+Symlinking /home/harikrishna/catkin_ws/src/sensor_data/devel/./env.sh
+Symlinking /home/harikrishna/catkin_ws/src/sensor_data/devel/./local_setup.sh
+Symlinking /home/harikrishna/catkin_ws/src/sensor_data/devel/./local_setup.bash
+Symlinking /home/harikrishna/catkin_ws/src/sensor_data/devel/./setup.sh
+Symlinking /home/harikrishna/catkin_ws/src/sensor_data/devel/./cmake.lock
+Symlinking /home/harikrishna/catkin_ws/src/sensor_data/devel/./_setup_util.py
+Symlinking /home/harikrishna/catkin_ws/src/sensor_data/devel/./local_setup.zsh
+Symlinking /home/harikrishna/catkin_ws/src/sensor_data/devel/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig.cmake
+Symlinking /home/harikrishna/catkin_ws/src/sensor_data/devel/share/catkin_tools_prebuild/cmake/catkin_tools_prebuildConfig-version.cmake
+Symlinking /home/harikrishna/catkin_ws/src/sensor_data/devel/lib/pkgconfig/catkin_tools_prebuild.pc

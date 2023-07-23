@@ -1,0 +1,6 @@
+# SensorData.srv
+string accelerometer
+string gpu
+string location
+---
+bool success
